@@ -45,6 +45,6 @@ exit
 exit /b
 
 :createTask
-    schtasks /create /tn "rdp tunnel" /tr "%sshPre%%sshEnd%" /SC ONSTART && schtasks /change /tn "rdp tunnel" /RI 1440 && echo task created
+    schtasks /create /tn "rdp tunnel" /tr "%sshPre%%sshEnd%" /SC ONSTART /NP && schtasks /change /tn "rdp tunnel" /RI 1440 && echo task created
 exit /b
     
