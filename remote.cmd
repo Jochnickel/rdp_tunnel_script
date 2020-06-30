@@ -1,1 +1,1 @@
-ssh -R remote_port:localhost:local_port username@server.com
+ssh -R 55443:localhost:3389 username@server.com
