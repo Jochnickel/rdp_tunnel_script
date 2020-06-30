@@ -1,1 +1,1 @@
-ssh -l remoteport:localhost:homeport user@server.com
+ssh -L 55443:localhost:55443 user@server.com
