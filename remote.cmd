@@ -1,16 +1,7 @@
-:: auto connection : planned tasks as adminstrator. make sure ssh tunnel works
+:: a script that initiates the remote tunnel
 ::
-
-
-:: option 1 : connection via pw-protected (standard) user
-::            add standard-user to remote users
+:: make sure the targeted user is in the Remote Desktop User group
 ::
-:: option 2 : allow connections w/o pw
-::
-
-:: Test ssh tunnel
-ssh -R 55443:localhost:3389 username@server.com printf "\nssh connection works!" || (echo && echo ssh connection failed && pause && exit)
-
 :::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :: Script start
 
@@ -19,35 +10,41 @@ ssh -R 55443:localhost:3389 username@server.com printf "\nssh connection works!"
 set sshPre=ssh -R 55443:localhost:3389 
 set /p sshEnd=Complete the ssh command: %sshPre%
 
-call :testSSH
+echo starting ssh...
+call :tunnelSSH
 if %errorlevel% == 0 (
-    echo ssh works
+    echo.
 ) else (
-    echo ssh connection failed!
+    echo ...ssh connection failed!
     pause
     exit
 )
 
+echo creating Task...
 call :createTask
 if %errorlevel% == 0 (
     echo startup task created
 ) else (
+    echo ...task not created.
+    echo.
     echo You need to run this script as Administrator
     pause
     exit
 )
 
-pause
+echo ...done!
+call :tunnelSSH
+exit
 
 :: Script End
 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
 :: Functions
 
-:testSSH
-    cmd /c %sshPre%%sshEnd% echo connected
+:tunnelSSH
+    cmd /c %sshPre%%sshEnd% echo "Tunnel running. Close window or proceed to create scheduled task"; read
 exit /b
 
 :createTask
-    schtasks /create /tn "rdp tunnel" /tr %sshPre%%sshEnd% /SC ONSTART && schtasks /change /tn "rdp tunnel" /RI 1440
+    schtasks /create /tn "rdp tunnel" /tr "%sshPre%%sshEnd%" /SC ONSTART && schtasks /change /tn "rdp tunnel" /RI 1440 && echo task created
 exit /b
     
